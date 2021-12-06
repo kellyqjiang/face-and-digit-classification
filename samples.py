@@ -1,4 +1,13 @@
+# samples.py
+# ----------
+# Licensing Information: Please do not distribute or publish solutions to this
+# project. You are free to use and extend these projects for educational
+# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+# For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
+
 import util
+import random
 
 ## Constants
 DATUM_WIDTH = 0 # in pixels
@@ -9,7 +18,6 @@ DATUM_HEIGHT = 0 # in pixels
 class Datum:
   """
   A datum is a pixel-level encoding of digits or face/non-face edge maps.
-
   Digits are from the MNIST dataset and face images are from the 
   easy-faces and background categories of the Caltech 101 dataset.
   
@@ -73,7 +81,7 @@ class Datum:
     rows = []
     data = util.arrayInvert(self.pixels)
     for row in data:
-      ascii = map(asciiGrayscaleConversionFunction, row)
+      ascii = list(map(asciiGrayscaleConversionFunction, row))
       rows.append( "".join(ascii) )
     return "\n".join(rows)
     
@@ -84,7 +92,7 @@ class Datum:
 
 # Data processing, cleanup and display functions
     
-def loadDataFile(filename, n,width,height):
+def loadDataFile(filename, n,width,height,isRandom=False):
   """
   Reads n data images from a file and returns a list of Datum objects.
   
@@ -92,32 +100,50 @@ def loadDataFile(filename, n,width,height):
   """
   DATUM_WIDTH=width
   DATUM_HEIGHT=height
-  fin = open(filename)
+  fin = readlines(filename)
+  fin.reverse()
   items = []
-  for i in range(n):
+
+  dataAmountInFile = len(fin) // DATUM_HEIGHT
+  chosenList = []
+  if isRandom:
+    chosenList = random.sample(range(0, dataAmountInFile), n)
+  else:
+    chosenList = range(n)
+
+  for i in chosenList:
     data = []
+    startValue = -(i*height + 1) 
     for j in range(height):
-      data.append(list(fin.readline())[:-1])
+      data.append(list(fin[startValue-j]))
     if len(data[0]) < DATUM_WIDTH-1:
       # we encountered end of file...
-      print("Truncating at %d examples (maximum)" % (i+1))
+      print("Truncating at %d examples (maximum)" % i)
       break
     items.append(Datum(data,DATUM_WIDTH,DATUM_HEIGHT))
-  fin.close()
-  return items 
+  return (items, chosenList)
 
-def loadLabelsFile(filename, n):
+
+import zipfile
+import os
+def readlines(filename):
+  "Opens a file or reads it from the zip archive data.zip"
+  if(os.path.exists(filename)): 
+    return [l[:-1] for l in open(filename).readlines()]
+  else: 
+    z = zipfile.ZipFile('data.zip')
+    return z.read(filename).split('\n')
+    
+def loadLabelsFile(filename, chosenList):
   """
   Reads n labels from a file and returns a list of integers.
   """
-  fin = open(filename)
+  fin = readlines(filename)
   labels = []
-  for i in range(n):
-    line = fin.readline()
-    if line == '':
-        break
-    labels.append(int(line))
-  fin.close()
+
+  for value in chosenList:
+    labels.append(int(fin[value]))
+
   return labels
   
 def asciiGrayscaleConversionFunction(value):
@@ -149,25 +175,25 @@ def convertToInteger(data):
   if type(data) != type([]):
     return IntegerConversionFunction(data)
   else:
-    return map(convertToInteger, data)
+    return list(map(convertToInteger, data))
 
 # Testing
 
-def _test():
-  import doctest
-  doctest.testmod() # Test the interactive sessions in function comments
-  n = 1
-#  items = loadDataFile("../facedata/facedatatrain", n,60,70)
-#  labels = loadLabelsFile("../facedata/facedatatrainlabels", n)
-  items = loadDataFile("../digitdata/trainingimages", n,28,28)
-  labels = loadLabelsFile("../digitdata/traininglabels", n)
-  for i in range(1):
-    print(items[i])
-    print(items[i])
-    print(items[i].height)
-    print(items[i].width)
-    print(dir(items[i]))
-    print(items[i].getPixels())
+# def _test():
+#   import doctest
+#   doctest.testmod() # Test the interactive sessions in function comments
+#   n = 1
+# #  items = loadDataFile("facedata/facedatatrain", n,60,70)
+# #  labels = loadLabelsFile("facedata/facedatatrainlabels", n)
+#   items = loadDataFile("digitdata/trainingimages", n,28,28)
+#   labels = loadLabelsFile("digitdata/traininglabels", n)
+#   for i in range(1):
+#     print(items[i])
+#     print(items[i])
+#     print((items[i].height))
+#     print((items[i].width))
+#     print(dir(items[i]))
+#     print(items[i].getPixels())
 
-if __name__ == "__main__":
-  _test()  
+# if __name__ == "__main__":
+#   _test()  
