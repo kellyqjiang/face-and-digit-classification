@@ -295,7 +295,7 @@ def pause():
   """
   Pauses the output stream awaiting user feedback.
   """
-  print "<Press enter/return to continue>"
+  print("<Press enter/return to continue>")
   raw_input()
 
 def _test():

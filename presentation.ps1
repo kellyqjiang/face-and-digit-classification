@@ -80,7 +80,7 @@ if($runPerceptron)
 
 }
 #-------------------------------------------------k NEAREST NEIGHBOR--------------------------------------------------------
-if($runkNearestNeighbor)
+if($runkNeighbor)
 {
 
     foreach ($amount in $faceArray) 
