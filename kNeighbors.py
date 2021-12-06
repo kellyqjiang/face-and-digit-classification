@@ -15,7 +15,7 @@ import tracemalloc
 import time
 PRINT = True
 
-class kNearestNeighborsClassifier:
+class kNeighborsClassifier:
   """
   Perceptron classifier.
   
