@@ -1,3 +1,11 @@
+# naiveBayes.py
+# -------------
+# Licensing Information: Please do not distribute or publish solutions to this
+# project. You are free to use and extend these projects for educational
+# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+# For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
+
 import util
 import classificationMethod
 import math
@@ -10,11 +18,11 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
   (not to a raw samples.Datum).
   """
   def __init__(self, legalLabels):
-    # Do not delete or change any of those variables!
     self.legalLabels = legalLabels
     self.type = "naivebayes"
-    self.k = 1 # this is the smoothing parameter
-    self.automaticTuning = False # Flat for automatic tuning of the parameters
+    self.k = 1 # this is the smoothing parameter, ** use it in your train method **
+    self.automaticTuning = False # Look at this flag to decide whether to choose k automatically ** use this in your train method **
+    print("Legal Labels:", self.legalLabels)
     
   def setSmoothing(self, k):
     """
@@ -27,41 +35,61 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     """
     Outside shell to call your method. Do not modify this method.
     """  
-
-    self.features = trainingData[0].keys() # this could be useful for your code later...
+      
+    # might be useful in your code later...
+    # this is a list of all features in the training set.
+    self.features = list(set([ f for datum in trainingData for f in list(datum.keys()) ]));
     
     if (self.automaticTuning):
-        kgrid = [0.001, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100]
+        kgrid = [0.001, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 20, 50]
     else:
         kgrid = [self.k]
         
-    return self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
+    self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
+
+  def getFeatureCountTrue(self, feature, label):
+    return self.featureCounts[label][feature]
+
+  def getFeatureCountFalse(self, feature, label):
+    return self.count_labels[label] - self.featureCounts[label][feature]
       
   def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
     """
-    Train the classifier by collecting counts over the training data 
-    and choose the smoothing parameter among the choices in kgrid by
-    using the validation data. This method stores the right parameters
-    as a side-effect and should return the best smoothing parameters.
-
-    See the project description for details.
+    Trains the classifier by collecting counts over the training data, and
+    stores the Laplace smoothed estimates so that they can be used to classify.
+    Evaluate each value of k in kgrid to choose the smoothing parameter 
+    that gives the best accuracy on the held-out validationData.
     
-    Note that trainingData is a list of feature Counters.
+    trainingData and validationData are lists of feature Counters.  The corresponding
+    label lists contain the correct label for each datum.
     
-    Assume that we do not use sparse encoding (normally we would); so that you can
-    figure out what are the list of possible features by just looking
-    at trainData[0].keys() generically. Your code should not make any assumption
-    about the feature keys apart that they are all in trainData[0].keys().
-    
-    If you want to simplify your code, you can assume that each feature is binary
-    (can only take the value 0 or 1).
+    To get the list of all possible features or labels, use self.features and 
+    self.legalLabels.
     """
+
+    "*** YOUR CODE HERE ***"
+    #added vars:
+    #   self.count_labels
+    #   self.featureCounts
+    #   self.dataCount
+
+    #Use this var to get P(label)
+    self.count_labels = [0 for x in self.legalLabels]
+
+    self.featureCounts = {}
+    for label in self.legalLabels:
+      self.featureCounts[label] = util.Counter() # this is the data-structure you should use
+
+    counter = 0
+    for i in range(len(trainingData)):
+      counter += 1
+      self.count_labels[trainingLabels[i]] += 1
+      self.featureCounts[i] = util.Counter()
+      self.featureCounts[trainingLabels[i]] += trainingData[i]
+
+    self.dataCount = counter
     
-    ## Your code here
-  
-    
-    return self.k
-    
+        
   def classify(self, testData):
     """
     Classify the data based on the posterior distribution over labels.
@@ -71,41 +99,54 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     guesses = []
     self.posteriors = [] # Log posteriors are stored for later data analysis (autograder).
     for datum in testData:
-      posterior = self.calculateLogPosteriorProbabilities(datum)
+      posterior = self.calculateLogJointProbabilities(datum)
       guesses.append(posterior.argMax())
       self.posteriors.append(posterior)
     return guesses
       
-  def calculateLogPosteriorProbabilities(self, datum):
+  def calculateLogJointProbabilities(self, datum):
     """
-    Returns the log-posterior distribution over legal labels given the datum.
-    Each log-probability should be stored in the posterior counter, e.g.    
-    posterior['spam'] = <Estimate of log( P(Label = 'spam' | datum) )>
+    Returns the log-joint distribution over legal labels and the datum.
+    Each log-probability should be stored in the log-joint counter, e.g.    
+    logJoint[3] = <Estimate of log( P(Label = 3, datum) )>
+    
+    To get the list of all possible features or labels, use self.features and 
+    self.legalLabels.
     """
-    posterior = util.Counter()
+    logJoint = util.Counter()
     
-    ## Your code here
-    # example of type of values: posterior["SomeLabel"] = math.log(1e-301) 
+    #getFeatureCountTrue(feature, label)
+    #getFeatureCountFalse(feature, label)
+
+    "*** YOUR CODE HERE ***"
+    for label in self.legalLabels:
+      priorProb_Labels = math.log(self.count_labels[label] / self.dataCount)
+
+      featureProb_givenLabel = 0
+      for feature in datum:
+        trueCount = self.getFeatureCountTrue(feature, label) + self.k
+        falseCount = self.getFeatureCountFalse(feature, label) + self.k
+        denominator = trueCount + falseCount
+
+        if(datum[feature]):
+          featureProb_givenLabel += math.log(trueCount / denominator)
+        else:
+          featureProb_givenLabel += math.log(falseCount / denominator)
+
+      logJoint[label] = priorProb_Labels + featureProb_givenLabel
     
-    return posterior
+    return logJoint
   
-  def findHighOddsFeatures(self, class1, class2):
+  def findHighOddsFeatures(self, label1, label2):
     """
-    Returns: 
-    featuresClass1 -- the 100 best features for P(feature=on|class1) (as a list)
-    featuresClass2 -- the 100 best features for P(feature=on|class2)
-    featuresOdds -- the 100 best features for the odds ratio 
-                     P(feature=on|class1)/P(feature=on|class2) 
+    Returns the 100 best features for the odds ratio:
+            P(feature=1 | label1)/P(feature=1 | label2) 
+    
+    Note: you may find 'self.features' a useful way to loop through all possible features
     """
-
-    featuresClass1 = []
-    featuresClass2 = []
     featuresOdds = []
-    
-    ## Your code here
+       
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
 
-    return featuresClass1,featuresClass2,featuresOdds
-    
-
-    
-      
+    return featuresOdds
