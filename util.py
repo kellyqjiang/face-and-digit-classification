@@ -136,9 +136,9 @@ class Counter(dict):
   subtracted or multiplied together.  See below for details.  They can
   also be normalized and their total count and arg max can be extracted.
   """
-  # def __getitem__(self, idx):
-  #   self.setdefault(idx, 0)
-  #   return dict.__getitem__(self, idx)
+  def __getitem__(self, idx):
+    self.setdefault(idx, 0)
+    return dict.__getitem__(self, idx)
 
   def incrementAll(self, keys, count):
     """
@@ -207,11 +207,11 @@ class Counter(dict):
     for key in self:
       self[key] /= divisor
 
-  # def copy(self):
-  #   """
-  #   Returns a copy of the counter
-  #   """
-  #   return Counter(dict.copy(self))
+  def copy(self):
+    """
+    Returns a copy of the counter
+    """
+    return Counter(dict.copy(self))
   
   def __mul__(self, y ):
     """
