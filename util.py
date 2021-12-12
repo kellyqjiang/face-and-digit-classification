@@ -350,58 +350,58 @@ def normalize(vectorOrCounter):
 #       cdf += distribution[distPos]
 #   return samples
     
-def sample(distribution, values = None):
-  if type(distribution) == Counter: 
-    items = list(distribution.items())
-    distribution = [i[1] for i in items] 
-    values = [i[0] for i in items] 
-  if sum(distribution) != 1:
-    distribution = normalize(distribution)
-  choice = random.random()
-  i, total= 0, distribution[0]
-  while choice > total:
-    i += 1
-    total += distribution[i]
-  return values[i]
+# def sample(distribution, values = None):
+#   if type(distribution) == Counter: 
+#     items = list(distribution.items())
+#     distribution = [i[1] for i in items] 
+#     values = [i[0] for i in items] 
+#   if sum(distribution) != 1:
+#     distribution = normalize(distribution)
+#   choice = random.random()
+#   i, total= 0, distribution[0]
+#   while choice > total:
+#     i += 1
+#     total += distribution[i]
+#   return values[i]
 
-def sampleFromCounter(ctr):
-  items = list(ctr.items())
-  return sample([v for k,v in items], [k for k,v in items])
+# def sampleFromCounter(ctr):
+#   items = list(ctr.items())
+#   return sample([v for k,v in items], [k for k,v in items])
 
-def getProbability(value, distribution, values):
-  """
-    Gives the probability of a value under a discrete distribution
-    defined by (distributions, values).
-  """
-  total = 0.0
-  for prob, val in zip(distribution, values):
-    if val == value:
-      total += prob
-  return total
+# def getProbability(value, distribution, values):
+#   """
+#     Gives the probability of a value under a discrete distribution
+#     defined by (distributions, values).
+#   """
+#   total = 0.0
+#   for prob, val in zip(distribution, values):
+#     if val == value:
+#       total += prob
+#   return total
 
-def flipCoin( p ):
-  r = random.random()
-  return r < p 
+# def flipCoin( p ):
+#   r = random.random()
+#   return r < p 
 
-def chooseFromDistribution( distribution ):
-  "Takes either a counter or a list of (prob, key) pairs and samples"
-  if type(distribution) == dict or type(distribution) == Counter:
-    return sample(distribution)
-  r = random.random()
-  base = 0.0
-  for prob, element in distribution:
-    base += prob
-    if r <= base: return element
+# def chooseFromDistribution( distribution ):
+#   "Takes either a counter or a list of (prob, key) pairs and samples"
+#   if type(distribution) == dict or type(distribution) == Counter:
+#     return sample(distribution)
+#   r = random.random()
+#   base = 0.0
+#   for prob, element in distribution:
+#     base += prob
+#     if r <= base: return element
     
-def nearestPoint( pos ):
-  """
-  Finds the nearest grid point to a position (discretizes).
-  """
-  ( current_row, current_col ) = pos
+# def nearestPoint( pos ):
+#   """
+#   Finds the nearest grid point to a position (discretizes).
+#   """
+#   ( current_row, current_col ) = pos
 
-  grid_row = int( current_row + 0.5 ) 
-  grid_col = int( current_col + 0.5 ) 
-  return ( grid_row, grid_col )     
+#   grid_row = int( current_row + 0.5 ) 
+#   grid_col = int( current_col + 0.5 ) 
+#   return ( grid_row, grid_col )     
 
 def sign( x ):
   """
@@ -422,42 +422,42 @@ def arrayInvert(array):
       result[inner].append(outer[inner])
   return result
 
-def matrixAsList( matrix, value = True ):
-  """
-  Turns a matrix into a list of coordinates matching the specified value
-  """
-  rows, cols = len( matrix ), len( matrix[0] )
-  cells = []
-  for row in range( rows ):
-    for col in range( cols ):
-      if matrix[row][col] == value:
-        cells.append( ( row, col ) )
-  return cells
+# def matrixAsList( matrix, value = True ):
+#   """
+#   Turns a matrix into a list of coordinates matching the specified value
+#   """
+#   rows, cols = len( matrix ), len( matrix[0] )
+#   cells = []
+#   for row in range( rows ):
+#     for col in range( cols ):
+#       if matrix[row][col] == value:
+#         cells.append( ( row, col ) )
+#   return cells
 
-def lookup(name, namespace):
-  """
-  Get a method or class from any imported module from its name.
-  Usage: lookup(functionName, globals())
-  """
-  dots = name.count('.')
-  if dots > 0:
-    moduleName, objName = '.'.join(name.split('.')[:-1]), name.split('.')[-1]
-    module = __import__(moduleName)
-    return getattr(module, objName)
-  else:
-    modules = [obj for obj in list(namespace.values()) if str(type(obj)) == "<type 'module'>"]
-    options = [getattr(module, name) for module in modules if name in dir(module)]
-    options += [obj[1] for obj in list(namespace.items()) if obj[0] == name ]
-    if len(options) == 1: return options[0]
-    if len(options) > 1: raise Exception('Name conflict for %s')
-    raise Exception('%s not found as a method or class' % name)
+# def lookup(name, namespace):
+#   """
+#   Get a method or class from any imported module from its name.
+#   Usage: lookup(functionName, globals())
+#   """
+#   dots = name.count('.')
+#   if dots > 0:
+#     moduleName, objName = '.'.join(name.split('.')[:-1]), name.split('.')[-1]
+#     module = __import__(moduleName)
+#     return getattr(module, objName)
+#   else:
+#     modules = [obj for obj in list(namespace.values()) if str(type(obj)) == "<type 'module'>"]
+#     options = [getattr(module, name) for module in modules if name in dir(module)]
+#     options += [obj[1] for obj in list(namespace.items()) if obj[0] == name ]
+#     if len(options) == 1: return options[0]
+#     if len(options) > 1: raise Exception('Name conflict for %s')
+#     raise Exception('%s not found as a method or class' % name)
 
-def pause():
-  """
-  Pauses the output stream awaiting user feedback.
-  """
-  print("<Press enter/return to continue>")
-  input()
+# def pause():
+#   """
+#   Pauses the output stream awaiting user feedback.
+#   """
+#   print("<Press enter/return to continue>")
+#   input()
   
   
 ## code to handle timeouts
@@ -467,7 +467,6 @@ class TimeoutFunctionException(Exception):
     pass
 
 class TimeoutFunction:
-
     def __init__(self, function, timeout):
         "timeout must be at least 1 second. WHY??"
         self.timeout = timeout
