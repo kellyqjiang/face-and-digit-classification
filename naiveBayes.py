@@ -1,11 +1,3 @@
-# naiveBayes.py
-# -------------
-# Licensing Information: Please do not distribute or publish solutions to this
-# project. You are free to use and extend these projects for educational
-# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
-# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
-
 import util
 import classificationMethod
 import math
@@ -51,7 +43,7 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     return self.featureCounts[label][feature]
 
   def getFeatureCountFalse(self, feature, label):
-    return self.count_labels[label] - self.featureCounts[label][feature]
+    return self.countLabel[label] - self.featureCounts[label][feature]
       
   def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
     """
@@ -69,21 +61,21 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
 
     "*** YOUR CODE HERE ***"
     #added vars:
-    #   self.count_labels
+    #   self.countLabel
     #   self.featureCounts
     #   self.dataCount
 
     #Use this var to get P(label)
-    self.count_labels = [0 for x in self.legalLabels]
+    self.countLabel = [0 for x in self.legalLabels] # Fills countLabel with 0s
 
-    self.featureCounts = {}
-    for label in self.legalLabels:
+    self.featureCounts = {} # Empty featureCounts
+    for label in self.legalLabels: # for every label in the legalLabels array
       self.featureCounts[label] = util.Counter() # this is the data-structure you should use
 
     counter = 0
-    for i in range(len(trainingData)):
-      counter += 1
-      self.count_labels[trainingLabels[i]] += 1
+    for i in range(len(trainingData)): # in range of the training data
+      counter += 1 # increment counter
+      self.countLabel[trainingLabels[i]] += 1 
       self.featureCounts[i] = util.Counter()
       self.featureCounts[trainingLabels[i]] += trainingData[i]
 
@@ -120,7 +112,7 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
 
     "*** YOUR CODE HERE ***"
     for label in self.legalLabels:
-      priorProb_Labels = math.log(self.count_labels[label] / self.dataCount)
+      priorProb_Labels = math.log(self.countLabel[label] / self.dataCount)
 
       featureProb_givenLabel = 0
       for feature in datum:
