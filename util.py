@@ -1,10 +1,3 @@
-# util.py
-# -------
-# Licensing Information: Please do not distribute or publish solutions to this
-# project. You are free to use and extend these projects for educational
-# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
-# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
 import sys
 import inspect
@@ -143,9 +136,9 @@ class Counter(dict):
   subtracted or multiplied together.  See below for details.  They can
   also be normalized and their total count and arg max can be extracted.
   """
-  def __getitem__(self, idx):
-    self.setdefault(idx, 0)
-    return dict.__getitem__(self, idx)
+  # def __getitem__(self, idx):
+  #   self.setdefault(idx, 0)
+  #   return dict.__getitem__(self, idx)
 
   def incrementAll(self, keys, count):
     """
@@ -214,11 +207,11 @@ class Counter(dict):
     for key in self:
       self[key] /= divisor
 
-  def copy(self):
-    """
-    Returns a copy of the counter
-    """
-    return Counter(dict.copy(self))
+  # def copy(self):
+  #   """
+  #   Returns a copy of the counter
+  #   """
+  #   return Counter(dict.copy(self))
   
   def __mul__(self, y ):
     """
@@ -315,10 +308,12 @@ class Counter(dict):
         continue
       addend[key] = -1 * y[key]
     return addend
-    
+
+# used in naiveBayes.py and perceptron.py
 def raiseNotDefined():
   print("Method not implemented: %s" % inspect.stack()[1][3])    
   sys.exit(1)
+
 
 def normalize(vectorOrCounter):
   """
@@ -338,22 +333,22 @@ def normalize(vectorOrCounter):
     s = float(sum(vector))
     if s == 0: return vector
     return [el / s for el in vector]
-                
-def nSample(distribution, values, n):
-  if sum(distribution) != 1:
-    distribution = normalize(distribution)
-  rand = [random.random() for i in range(n)]
-  rand.sort()
-  samples = []
-  samplePos, distPos, cdf = 0,0, distribution[0]
-  while samplePos < n:
-    if rand[samplePos] < cdf:
-      samplePos += 1
-      samples.append(values[distPos])
-    else:
-      distPos += 1
-      cdf += distribution[distPos]
-  return samples
+           
+# def nSample(distribution, values, n):
+#   if sum(distribution) != 1:
+#     distribution = normalize(distribution)
+#   rand = [random.random() for i in range(n)]
+#   rand.sort()
+#   samples = []
+#   samplePos, distPos, cdf = 0,0, distribution[0]
+#   while samplePos < n:
+#     if rand[samplePos] < cdf:
+#       samplePos += 1
+#       samples.append(values[distPos])
+#     else:
+#       distPos += 1
+#       cdf += distribution[distPos]
+#   return samples
     
 def sample(distribution, values = None):
   if type(distribution) == Counter: 
