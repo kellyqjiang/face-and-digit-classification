@@ -117,8 +117,8 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
 
       featureProb_givenLabel = 0
       for feature in datum:
-        trueCount = self.getFeatureCountTrue(feature, label) + self.k
-        falseCount = self.getFeatureCountFalse(feature, label) + self.k
+        trueCount = self.featureCounts[label][feature] + self.k
+        falseCount = (self.countLabel[label] - self.featureCounts[label][feature]) + self.k
         denominator = trueCount + falseCount
 
         if(datum[feature]):
@@ -130,16 +130,16 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     
     return logJoint
   
-  def findHighOddsFeatures(self, label1, label2):
-    """
-    Returns the 100 best features for the odds ratio:
-            P(feature=1 | label1)/P(feature=1 | label2) 
+  # def findHighOddsFeatures(self, label1, label2):
+  #   """
+  #   Returns the 100 best features for the odds ratio:
+  #           P(feature=1 | label1)/P(feature=1 | label2) 
     
-    Note: you may find 'self.features' a useful way to loop through all possible features
-    """
-    featuresOdds = []
+  #   Note: you may find 'self.features' a useful way to loop through all possible features
+  #   """
+  #   featuresOdds = []
        
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+  #   "*** YOUR CODE HERE ***"
+  #   util.raiseNotDefined()
 
-    return featuresOdds
+  #   return featuresOdds
