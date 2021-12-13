@@ -8,8 +8,6 @@
 
 # Mira implementation
 
-#THIS FILE IS NOT BEING USED
-
 import util
 PRINT = True
 

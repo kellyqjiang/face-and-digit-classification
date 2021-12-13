@@ -38,7 +38,8 @@ class PerceptronClassifier:
     
     for iteration in range(self.max_iterations):
       print("Starting iteration %d..." % iteration)
-      for i in range(len(trainingData)):
+      #Testing with 10% of the training data
+      for i in range(round(0.1*len(trainingData))):
         "*** YOUR CODE HERE ***"
         vectors = util.Counter()
         for label in self.legalLabels:

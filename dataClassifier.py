@@ -75,13 +75,13 @@ def contestFeatureExtractorDigit(datum):
   features =  basicFeatureExtractorDigit(datum)
   return features
 
-def enhancedFeatureExtractorFace(datum):
-  """
-  Your feature extraction playground for faces.
-  It is your choice to modify this.
-  """
-  features =  basicFeatureExtractorFace(datum)
-  return features
+# def enhancedFeatureExtractorFace(datum):
+#   """
+#   Your feature extraction playground for faces.
+#   It is your choice to modify this.
+#   """
+#   features =  basicFeatureExtractorFace(datum)
+#   return features
 
 def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage):
   """
@@ -195,11 +195,12 @@ def readCommand( argv ):
     if (options.classifier == 'minicontest'):
       featureFunction = contestFeatureExtractorDigit
   elif(options.data=="faces"):
+    featureFunction = basicFeatureExtractorFace      
     printImage = ImagePrinter(FACE_DATUM_WIDTH, FACE_DATUM_HEIGHT).printImage
-    if (options.features):
-      featureFunction = enhancedFeatureExtractorFace
-    else:
-      featureFunction = basicFeatureExtractorFace      
+    # if (options.features):
+    #   featureFunction = enhancedFeatureExtractorFace
+    # else:
+    #   featureFunction = basicFeatureExtractorFace      
   else:
     print("Unknown dataset", options.data)
     print(USAGE_STRING)

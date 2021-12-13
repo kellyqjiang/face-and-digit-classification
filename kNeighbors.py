@@ -96,7 +96,8 @@ class kNeighborsClassifier:
       distanceValues = []
       # print("------")
       # start = time.time()
-      for i in range(len(self.trainingData)):
+      #Testing with 10% of the training data
+      for i in range(round(0.1*len(self.trainingData))):
         distanceValues.append(  (self.findDistance(datum,self.trainingData[i]), i)  ) # need to pass i through for each distance to get the trainingLabel
       # end1 = time.time() - start
       # print(end1)

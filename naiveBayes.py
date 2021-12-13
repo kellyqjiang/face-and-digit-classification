@@ -73,7 +73,8 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
       self.featureCounts[label] = util.Counter() # this is the data-structure you should use
 
     counter = 0
-    for i in range(len(trainingData)): # in range of the training data
+    #Testing with 10% of the training data
+    for i in range(round(0.2*len(trainingData))): # in range of the training data
       counter += 1 # increment counter
       self.countLabel[trainingLabels[i]] += 1 
       self.featureCounts[i] = util.Counter()
