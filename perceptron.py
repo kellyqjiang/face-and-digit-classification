@@ -17,8 +17,8 @@ class PerceptronClassifier:
       self.weights[label] = util.Counter() # this is the data-structure you should use
 
   def setWeights(self, weights):
-    assert len(weights) == len(self.legalLabels);
-    self.weights == weights;
+    assert len(weights) == len(self.legalLabels)
+    self.weights == weights
       
   def train( self, trainingData, trainingLabels, validationData, validationLabels ):
     """
@@ -32,24 +32,22 @@ class PerceptronClassifier:
     (and thus represents a vector a values).
     """
     
-    self.features = list(trainingData[0].keys()) # could be useful later
-    # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
-    # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
+    self.features = list(trainingData[0].keys())
     
     for iteration in range(self.max_iterations):
-      print("Starting iteration %d..." % iteration)
+      print("Starting iteration ", iteration, "...")
       #Testing with 10% of the training data
       for i in range(round(0.1*len(trainingData))):
         "*** YOUR CODE HERE ***"
         vectors = util.Counter()
-        for label in self.legalLabels:
-          vectors[label] = self.weights[label] * trainingData[i]
+        for l in self.legalLabels:
+          vectors[l] = self.weights[l] * trainingData[i]
 
-        #trainingLabels[i] is the true label
-        best_guess_label = vectors.argMax()
-        if trainingLabels[i] != best_guess_label:
-          self.weights[trainingLabels[i]] += trainingData[i]
-          self.weights[best_guess_label] -= trainingData[i]
+        real_label = trainingLabels[i]
+        maybe_label = vectors.argMax()
+        if real_label != maybe_label:
+          self.weights[real_label] += trainingData[i]
+          self.weights[maybe_label] -= trainingData[i]
 
     
   def classify(self, data ):
