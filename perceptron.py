@@ -43,10 +43,10 @@ class PerceptronClassifier:
         for l in self.legalLabels:
           vectors[l] = self.weights[l] * trainingData[i]
 
-        real_label = trainingLabels[i]
+        true_label = trainingLabels[i]
         maybe_label = vectors.argMax()
-        if real_label != maybe_label:
-          self.weights[real_label] += trainingData[i]
+        if true_label != maybe_label:
+          self.weights[true_label] += trainingData[i]
           self.weights[maybe_label] -= trainingData[i]
 
     
