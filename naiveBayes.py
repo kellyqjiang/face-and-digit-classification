@@ -38,12 +38,6 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
         kgrid = [self.k]
         
     self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
-
-  def getFeatureCountTrue(self, feature, label):
-    return self.featureCounts[label][feature]
-
-  def getFeatureCountFalse(self, feature, label):
-    return self.countLabel[label] - self.featureCounts[label][feature]
       
   def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
     """
@@ -60,27 +54,21 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     """
 
     "*** YOUR CODE HERE ***"
-    #added vars:
-    #   self.countLabel
-    #   self.featureCounts
-    #   self.dataCount
-
-    #Use this var to get P(label)
     self.countLabel = [0 for x in self.legalLabels] # Fills countLabel with 0s
 
-    self.featureCounts = {} # Empty featureCounts
+    self.fc = {} # Empty fc
     for label in self.legalLabels: # for every label in the legalLabels array
-      self.featureCounts[label] = util.Counter() # this is the data-structure you should use
+      self.fc[label] = util.Counter() # this is the data-structure you should use
 
     counter = 0
     #Testing with 10% of the training data
-    for i in range(round(0.2*len(trainingData))): # in range of the training data
+    for i in range(round(len(trainingData))): # in range of the training data
       counter += 1 # increment counter
       self.countLabel[trainingLabels[i]] += 1 
-      self.featureCounts[i] = util.Counter()
-      self.featureCounts[trainingLabels[i]] += trainingData[i]
+      self.fc[i] = util.Counter()
+      self.fc[trainingLabels[i]] += trainingData[i]
 
-    self.dataCount = counter
+    self.dc = counter
     
         
   def classify(self, testData):
@@ -107,39 +95,35 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     self.legalLabels.
     """
     logJoint = util.Counter()
-    
-    #getFeatureCountTrue(feature, label)
-    #getFeatureCountFalse(feature, label)
 
     "*** YOUR CODE HERE ***"
-    for label in self.legalLabels:
-      priorProb_Labels = math.log(self.countLabel[label] / self.dataCount)
+    for l in self.legalLabels:
+      ppl = math.log(self.countLabel[l] / self.dc)
 
-      featureProb_givenLabel = 0
-      for feature in datum:
-        trueCount = self.featureCounts[label][feature] + self.k
-        falseCount = (self.countLabel[label] - self.featureCounts[label][feature]) + self.k
-        denominator = trueCount + falseCount
+      fpl = 0
+      for f in datum:
+        trues = self.fc[l][f] + self.k
+        falses = (self.countLabel[l] - self.fc[l][f]) + self.k
+        sum = trues + falses
 
-        if(datum[feature]):
-          featureProb_givenLabel += math.log(trueCount / denominator)
+        if(datum[f]):
+          fpl += math.log(trues / sum)
         else:
-          featureProb_givenLabel += math.log(falseCount / denominator)
+          fpl += math.log(falses / sum)
 
-      logJoint[label] = priorProb_Labels + featureProb_givenLabel
+      logJoint[l] = ppl + fpl
     
     return logJoint
   
-  # def findHighOddsFeatures(self, label1, label2):
-  #   """
-  #   Returns the 100 best features for the odds ratio:
-  #           P(feature=1 | label1)/P(feature=1 | label2) 
+  def findHighOddsFeatures(self, label1, label2):
+    """
+    Returns the 100 best features for the odds ratio:
+            P(feature=1 | label1)/P(feature=1 | label2) 
     
-  #   Note: you may find 'self.features' a useful way to loop through all possible features
-  #   """
-  #   featuresOdds = []
+    Note: you may find 'self.features' a useful way to loop through all possible features
+    """
+    featuresOdds = []
        
-  #   "*** YOUR CODE HERE ***"
-  #   util.raiseNotDefined()
+    "*** YOUR CODE HERE ***"
 
-  #   return featuresOdds
+    return featuresOdds
