@@ -1,5 +1,3 @@
-# This file contains the abstract class ClassificationMethod
-
 class ClassificationMethod:
   """
   ClassificationMethod is the abstract superclass of 

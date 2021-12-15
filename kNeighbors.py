@@ -4,104 +4,75 @@ import math
 import statistics
 import tracemalloc
 import time
-PRINT = True
 
 class kNeighborsClassifier:
-  """
-  Perceptron classifier.
-  
-  Note that the variable 'datum' in this code refers to a counter of features
-  (not to a raw samples.Datum).
-  """
   def __init__( self, legalLabels, k=10):
-    self.legalLabels = legalLabels
     self.type = "kNN"
-    self.k = k
     self.weights = {}
-  # DELETE BELOW??
-  #   for label in legalLabels:
-  #     self.weights[label] = util.Counter() # this is the data-structure you should use
+    self.legalLabels = legalLabels
+    self.k = k
 
-  # def setWeights(self, weights):
-  #   assert len(weights) == len(self.legalLabels);
-  #   self.weights == weights;
-      
-  def train( self, trainingData, trainingLabels, validationData, validationLabels ):
-    """
-    The training loop for the perceptron passes through the training data several
-    times and updates the weight vector for each label based on classification errors.
-    See the project description for details. 
-    
-    Use the provided self.weights[label] data structure so that 
-    the classify method works correctly. Also, recall that a
-    datum is a counter from features to values for those features
-    (and thus represents a vector a values).
-    """
-    self.trainingData = self.downscaleDataFunction(trainingData)
-    self.trainingLabels = trainingLabels
-    
+  def downscale(self, datum_list):
+    #For Digits
+    height, width = 28, 28
+    img_height, img_width = 4, 4
+    img_rows, img_cols = 7, 7
 
+    #For Faces
+    if 2 not in self.legalLabels:
+      height, width = 70,60
+      img_height, img_width = 7,6
+      img_rows, img_cols = 10,10
 
-  def downscaleDataFunction(self, datum_list):
-    DATA_HEIGHT, DATA_WIDTH = 0,0
-    BLOCK_HEIGHT, BLOCK_WIDTH = 0,0
-    BLOCK_ROWS, BLOCK_COLS = 0,0
-    if 2 in self.legalLabels:
-      DATA_HEIGHT, DATA_WIDTH = 28,28
-      BLOCK_HEIGHT, BLOCK_WIDTH = 4,4
-      BLOCK_ROWS, BLOCK_COLS = 7,7
-
-    else:
-      DATA_HEIGHT, DATA_WIDTH = 70,60
-      BLOCK_HEIGHT, BLOCK_WIDTH = 7,6
-      BLOCK_ROWS, BLOCK_COLS = 10,10
-
-    downscaledDataAll = []
+    allscaledDownData = []
+    #Iterate through the data in the list
     for data in datum_list:
-      downscaledData = util.Counter()
-      for i_big in range(BLOCK_ROWS):
-        for j_big in range(BLOCK_COLS):
+      scaledDownData = util.Counter()
+      #Then iterate through the rows and columns in the image
+      for outer in range(img_rows):
+        for inner in range(img_cols):
           isFeature = 0
-
-          for i_small in range(BLOCK_HEIGHT):
+          #Iterate through the image pixels' height and width
+          for img_inner in range(img_height):
             if isFeature:
               break
-            for j_small in range(BLOCK_WIDTH):
-              if data[( i_big*BLOCK_HEIGHT + i_small , j_big*BLOCK_WIDTH + j_small )] == 1:
+            for img_outer in range(img_width):
+              if data[( outer*img_height + img_inner , inner*img_width + img_outer )] == 1:
                 isFeature = 1
                 break
 
-          downscaledData[(i_big,j_big)] = isFeature
+          scaledDownData[(outer,inner)] = isFeature
 
-      downscaledDataAll.append(downscaledData)
+      allscaledDownData.append(scaledDownData)
 
-    return downscaledDataAll
+    return allscaledDownData
 
-  def findDistance(self, test_datum, train_data):
-    if True:
-      x = test_datum - train_data
-      return numpy.sum(numpy.abs([x[value] for value in x]))
+  def train( self, trainingData, trainingLabels, validationData, validationLabels ):
+    self.trainingData = self.downscale(trainingData)
+    self.trainingLabels = trainingLabels
+
+  def calculateDistance(self, test_datum, train_data):
+    distance_diff = test_datum - train_data
+    sum = 0
+    for value in distance_diff: 
+      sum = sum + abs(distance_diff[value])
+    return sum
     
   def classify(self, data ):
     """
-    Find the k closest 'neighbors' of the test image in the training data
-    and then return the label which appeared the most. If there is a tie
-    then pick the label of the training image with the lowest distance.
+    Returns most occurring label from the test image's k closest neighbors or 
+    choose the training data's shortest distance image's label.
     """
+    data = self.downscale(data)
+    # data = self.normalize_dataset(data)
 
-    data = self.downscaleDataFunction(data)
-
-    guesses = []
+    g = []
     for datum in data:
       distanceValues = []
-      # print("------")
-      # start = time.time()
-      #Testing with 10% of the training data
-      for i in range(round(0.1*len(self.trainingData))):
-        distanceValues.append(  (self.findDistance(datum,self.trainingData[i]), i)  ) # need to pass i through for each distance to get the trainingLabel
-      # end1 = time.time() - start
-      # print(end1)
-
+      # Specify the percentage of training data used to test data
+      for i in range(round(len(self.trainingData))):
+        distanceValues.append(  (self.calculateDistance(datum,self.trainingData[i]), i)  )
+    
       distanceValues.sort()
       distanceValues = distanceValues[:self.k]
 
@@ -110,9 +81,9 @@ class kNeighborsClassifier:
         bestK_labels.append(self.trainingLabels[distance[1]])
 
       try:
-        guesses.append(statistics.mode(bestK_labels))
+        g.append(statistics.mode(bestK_labels))
       except:
-        guesses.append(bestK_labels[0])
+        g.append(bestK_labels[0])
 
 
-    return guesses
+    return g
