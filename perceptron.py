@@ -1,5 +1,4 @@
 import util
-PRINT = True
 
 class PerceptronClassifier:
   """

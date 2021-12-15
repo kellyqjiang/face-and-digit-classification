@@ -64,7 +64,6 @@ class kNeighborsClassifier:
     choose the training data's shortest distance image's label.
     """
     data = self.downscale(data)
-    # data = self.normalize_dataset(data)
 
     g = []
     for datum in data:
