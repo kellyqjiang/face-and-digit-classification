@@ -41,13 +41,13 @@ class PerceptronClassifier:
         "*** YOUR CODE HERE ***"
         vectors = util.Counter()
         for l in self.legalLabels:
-          vectors[l] = self.weights[l] * trainingData[i]
+          vectors[l] = trainingData[i] * self.weights[l] 
 
         true_label = trainingLabels[i]
-        maybe_label = vectors.argMax()
-        if true_label != maybe_label:
+        predicted_label = vectors.argMax()
+        if true_label != predicted_label:
           self.weights[true_label] += trainingData[i]
-          self.weights[maybe_label] -= trainingData[i]
+          self.weights[predicted_label] -= trainingData[i]
 
     
   def classify(self, data ):
